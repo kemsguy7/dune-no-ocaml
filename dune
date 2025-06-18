@@ -1,0 +1,6 @@
+; dune file for a simple project
+; This file defines a rule to create a text file with "Hello, World!"
+; when the target is built.
+(rule
+ (target hello.txt)
+ (action (write-file %{target} "Hello, World!")))
