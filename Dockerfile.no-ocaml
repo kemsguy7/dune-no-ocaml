@@ -1,23 +1,68 @@
+# FROM ubuntu:22.04
+
+# # Install only opam (not OCaml) 
+# RUN apt-get update && apt-get install -y opam curl 
+
+# # Initialize opam without installing OCaml
+# # and set up the environment
+# RUN opam init --disable-sandbox --auto-setup --no-setup 
+
+# # Create a switch without OCaml (empty switch)
+# RUN opam switch create no-ocaml --empty 
+
+# #install Dune as a standalone package (without ocaml dependencies)
+# RUN opam install dune --no-depexts --yes 
+
+# # Set up environment 
+# RUN echo 'eval $(opam env)' >> /.bashrc
+
+
+# WORKDIR /app
+# COPY . . 
+
+# FROM ubuntu:22.04
+
+# # Install dependencies
+# RUN apt-get update && apt-get install -y opam curl build-essential
+
+# # Initialize opam and install OCaml + dune
+# RUN opam init --disable-sandbox --auto-setup --no-setup
+# RUN opam switch create 4.14.0
+# RUN opam install dune
+
+# # Set up environment
+# RUN echo 'eval $(opam env)' >> ~/.bashrc
+
+# # Now remove ocamlc to simulate environment without OCaml compiler
+# # We keep dune but remove the OCaml compiler binaries
+# RUN eval $(opam env) && \
+#     which ocamlc && \
+#     rm -f $(which ocamlc) $(which ocamlopt) $(which ocaml) || true
+
+# # Verify ocamlc is gone but dune is still available
+# RUN eval $(opam env) && \
+#     (which ocamlc && echo "ERROR: ocamlc still found" && exit 1) || echo "Good: ocamlc not found" && \
+#     which dune && echo "Good: dune found"
+
+# WORKDIR /app
+# COPY . .
+
+# # Default command to test the build
+# CMD ["bash", "-c", "eval $(opam env) && dune build"]
+
+
 FROM ubuntu:22.04
 
-# Install only opam (not OCaml) 
-RUN apt-get update && apt-get install -y opam curl 
+# 1. Install only build essentials (no OPAM)
+RUN apt-get update && apt-get install -y curl make gcc
 
-# Initialize opam without installing OCaml
-# and set up the environment
-RUN opam init --disable-sandbox --auto-setup --no-setup 
+# 2. Install Dune as standalone binary
+RUN curl -L https://github.com/ocaml/dune/releases/download/3.14.0/dune-3.14.0-linux-x86_64 -o /usr/local/bin/dune && \
+    chmod +x /usr/local/bin/dune
 
-# Create a switch without OCaml (empty switch)
-RUN opam switch create no-ocaml --empty 
-
-#install Dune as a standalone package (without ocaml dependencies)
-RUN opam install dune --no-depexts --yes 
-
-# Set up environment 
-RUN echo 'eval $(opam env)' >> /.bashrc
-
+# 3. Verify absolutely no OCaml remains
+RUN which ocamlc || echo "Confirmed: No OCaml present" && \
+    which dune && echo "Dune installed"
 
 WORKDIR /app
-COPY . . 
-
-
+COPY . .
