@@ -56,7 +56,7 @@ FROM ubuntu:22.04
 # 1. Install only build essentials (no OPAM)
 RUN apt-get update && apt-get install -y curl make gcc
 
-# 2. Install Dune as standalone binary
+
 RUN curl -L https://github.com/ocaml/dune/releases/download/3.14.0/dune-3.14.0-linux-x86_64 -o /usr/local/bin/dune && \
     chmod +x /usr/local/bin/dune
 
@@ -66,3 +66,22 @@ RUN which ocamlc || echo "Confirmed: No OCaml present" && \
 
 WORKDIR /app
 COPY . .
+
+
+
+# FROM ubuntu:22.04
+
+# # 1. Install OPAM
+# RUN apt-get update && apt-get install -y opam
+
+# # 2. Initialize but prevent switch creation
+# RUN opam init --disable-sandboxing --no-setup --auto-setup
+
+# # 3. Install Dune globally without using  a switch
+# RUN opam install dune --no-depexts --yes --assume-depexts
+
+# # 4. Remove all OCaml compilers
+# RUN find / -name '*ocamlc*' -delete 2>/dev/null || true
+
+# WORKDIR /app
+# COPY . .
