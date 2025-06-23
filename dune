@@ -10,4 +10,3 @@
 (rule
  (target config.txt)
  (action (run %{ocamlc} -config > %{target})))
-EOF
