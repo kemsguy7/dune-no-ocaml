@@ -1,12 +1,14 @@
 ; dune file for a simple project
 ; This file defines a rule to create a text file with "Hello, World!"
 ; when the target is built.
-(rule
- (target hello.txt)
- (action (write-file %{target} "Hello, World!")))
+; (rule
+;  (target hello.txt)
+;  (action (write-file %{target} "Hello, World!")))
 
 
 ; This rule generates a configuration file using ocamlc -config it actually requires an ocaml compiler available in the environment for it to run successfully. 
 (rule
  (target config.txt)
- (action (run %{ocamlc} -config > %{target})))
+ (action (with-stdout-to %{target} (run  %{ocamlc} -config ) )
+ ) )
+
