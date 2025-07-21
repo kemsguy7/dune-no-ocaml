@@ -29,4 +29,3 @@ EOF2
     exit 1
     ;;
 esac
-EOF

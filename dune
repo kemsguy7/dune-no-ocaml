@@ -6,6 +6,7 @@
  (action (write-file %{target} "Hello, World!")))
 
 
+
 ; This rule generates a configuration file using ocamlc -config it actually requires an ocaml compiler available in the environment for it to run successfully. 
 ; (rule
 ;  (target config.txt)
